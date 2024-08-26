@@ -1,0 +1,8 @@
+.items-grid{
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin: 10px;
+    width: 100%;
+}

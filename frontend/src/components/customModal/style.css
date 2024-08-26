@@ -1,0 +1,25 @@
+.custom-modal{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(1, 4, 24, 0.342);
+}  
+
+.custom-container{
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    min-height: 300px;
+    min-width: 250px;
+    box-shadow: rgba(0, 0, 0, 0.09) 0px 2px 1px, rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px, rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
+}
+
+.custom-close{
+    display: flex;
+    justify-content: flex-end;
+}
