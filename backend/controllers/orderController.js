@@ -39,24 +39,17 @@ const createOrder = asyncHandler(async (req, res, next) => {
 });
 
 const updateOrder = asyncHandler(async (req, res, next) => {
-    const {clientName,
-        clientNumber,
-        items,
-        table,
-        waiter,
-        total,
-        id
-    } = req.body;
+    
     const user_id = req.user._id;
-    const order = await Order.findById(id);
+    const order = await Order.findById(req.body?._id);
     if(order){
-        order.clientName = clientName || order.clientName;
-        order.clientNumber = clientNumber || order.clientNumber;
-        order.items = items || order.items;
-        order.table = table || order.table;
-        order.waiter = waiter || order.waiter;
-        order.total = total || order.total;
-        order.updatedBy = user_id;
+        order.clientName = req.body?.clientName || order.clientName;
+        order.clientNumber = req.body?.clientNumber || order.clientNumber;
+        order.items = req.body?.items || order.items;
+        order.table = req.body?.table || order.table;
+        order.waiter = req.body?.waiter || order.waiter;
+        order.total = req.body?.total || order.total;
+        order.updatedBy = user_id;  
 
 
         await order.save();
@@ -86,7 +79,7 @@ const getOrder = asyncHandler(async (req, res, next) => {
 });
 
 const getOrders = asyncHandler(async (req, res, next) => {
-    const orders = await Order.find();
+    const orders = await Order.find().sort({_id: -1});
     if(orders){
         res.status(200).json({success: true, orders: orders.filter(ordr => ordr.status !== "deleted")});
     }else{

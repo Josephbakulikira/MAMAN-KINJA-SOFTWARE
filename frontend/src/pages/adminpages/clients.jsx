@@ -7,9 +7,10 @@ import { toast } from "react-toastify";
 import CustomModal from "../../components/customModal";
 import { useIdeal } from "../../context";
 import dateFormat from "dateformat";
+import HotelInvoice from "../../components/hotelInvoice";
 
 function ClientsPanel() {
-  const { clients, setClients, setPending, rooms, fetchClients} = useIdeal();
+  const { clients, setClients, setPending, rooms, setRooms, fetchClients} = useIdeal();
   const [new_client, setNewClient] = useState(null);
   const [current, setCurrent] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -101,6 +102,8 @@ function ClientsPanel() {
         toast.success(response?.message || "OK");
         // console.log(response)
         setClients([...clients, response.client]);
+        let filtered_rooms = rooms.filter(rmm => rmm.name !== response.room.name)
+        setRooms([...filtered_rooms, response.room])
         closeModal();
       } else {
         setPending(false);
@@ -136,6 +139,26 @@ function ClientsPanel() {
     }
   }
 
+  function getBgColorOfClient(checkIn, checkOut){
+    let colors = {
+      booked: "#cefac3",
+      checkedIn: "#c3dffa",
+      checkedOut: "#fac3c3"
+    }
+    let c_color = colors.booked;
+    if(new Date(checkIn).valueOf() > new Date().valueOf()){
+      c_color = colors.booked;
+    }
+    else if (new Date(checkIn).valueOf() <= new Date().valueOf()){
+      c_color = colors.checkedIn;
+    }
+    else if (new Date(checkOut).valueOf() <= new Date().valueOf()){
+      c_color = colors.checkedOut;
+    }
+
+    return c_color;
+  }
+
   return (
     <>
       <div>
@@ -145,10 +168,27 @@ function ClientsPanel() {
           </div>
           <div className="table-container">
             <div className="caption">Liste des clients</div>
+            <div style={{display: "flex", justifyContent: 'start', alignItems: 'center', gap: "10px"}}>
+              <div style={{whiteSpace: 'nowrap', display: "flex", alignItems: "center"}}>
+                <div style={{width: "30px", borderRadius: "15px", height: "30px", background: "#cefac3"}}>
+                </div> : Booked
+              </div>
+              <div style={{whiteSpace: 'nowrap', display: "flex", alignItems: "center"}}>
+                <div style={{width: "30px", borderRadius: "15px", height: "30px", background: "#c3dffa"}}>
+                </div> : Checked-in
+              </div>
+              <div style={{whiteSpace: 'nowrap', display: "flex", alignItems: "center"}}>
+                <div style={{width: "30px", borderRadius: "15px", height: "30px", background: "#fac3c3"}}>
+                </div> : Checked-out
+              </div>
+            </div>
+            <br/>
             <table>
               <thead>
                 <tr>
                   <th>N° </th>
+                  <th></th>
+
                   <th>Nom & Postnom</th>
                   <th>Numero de telephone</th>
                   <th>Email</th>
@@ -169,8 +209,13 @@ function ClientsPanel() {
               <tbody>
                 {clients?.map((item, index) => {
                   return (
-                    <tr key={item._id}>
+                    <tr style={{background: getBgColorOfClient(item?.checkIn, item?.checkOut)}} key={item._id}>
                       <td>{index + 1}</td>
+                      <td><NormalButton
+                          onClick={() => openModal(4, item)}
+                          text="🖨️"
+                          color="secondary"
+                        /></td>
                       <td>{item?.fullname}</td>
                       <td>{item?.phoneNumber}</td>
                       <td>{item?.email}</td>
@@ -186,14 +231,17 @@ function ClientsPanel() {
                         {" "}
                         <SimpleButton
                           onClick={() => openModal(2, item)}
-                          text="Voir"
+                          fontSize="20px"
+                          text="👁️"
                         />
                       </td>
                       <td>
                         {" "}
                         <SimpleButton
                           onClick={() => openModal(0, item)}
-                          text="modifier"
+                          fontSize="20px"
+
+                          text="✏️"
                         />
                       </td>
                       <td>
@@ -247,7 +295,7 @@ function ClientsPanel() {
                   <option value=""> ~ </option>
                 {rooms?.map((single_room, index) => {
                   // if (single_room.available)
-                    return <option key={single_room._id} value={single_room.name}>{single_room.name} ~ <span style={{color: "gray", fontWeight: "bold"}}>{dateFormat(single_room?.checkIn, "dd-mm-yyyy")} - {dateFormat(single_room?.checkOut, "dd-mm-yyyy")}</span> </option>
+                    return <option key={single_room._id} value={single_room.name}>{single_room.name}</option>
                 })}
               </select>
 
@@ -356,7 +404,9 @@ function ClientsPanel() {
               </div>
             </form>
           </>
-        ): <div style={{maxHeight: "80vh", overflowY: "scroll"}}>
+        ): viewIndex === 4 ? <>
+          <HotelInvoice client={current}/>
+        </> : <div style={{maxHeight: "80vh", overflowY: "scroll"}}>
         <p className="text-center">Historique</p>
         <form onSubmit={updateClientData} className="form-modal">
           <textarea
@@ -389,11 +439,13 @@ function ClientsPanel() {
           </div>
           <div>
           {current?.history?.map((hstr, index) => {
-            return <div style={{margin: "10px", border: "1px solid black", padding: "10px", borderRadius: "15px"}} key={index}>
+            console.log(Object.keys(hstr));
+            return <div style={{margin: "10px", border: "1px solid black", padding: "10px", borderRadius: "15px"}} key={`${index}client-history`}>
               <div>
                 {Object.keys(hstr).map((itm, idx) => {
-                  return <p key={itm}><b>{itm}: </b>{hstr[itm]}</p>
-          })}
+                  // console.log(itm);
+                  return <p key={idx}><b>{itm}: </b>{hstr[itm].constructor === Array ? "list": hstr[itm]}</p>
+                })}
               </div>
             </div>
           })}

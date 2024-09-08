@@ -7,24 +7,27 @@ import { createBill } from '../../api/bill';
 
 const payements = [
     "CASH",
-    "CARTE VISA",
     "CREDIT",
-    "AIRTEL MONEY",
-    "ORANGE MONEY",
-    "MPESA"
+    "CREDIT-HOTEL"
 ];
 
 function SingleOrder({order, users}) {
     const [payementType, setPayement] = useState("CASH");
     const [note, setNote] = useState("");
-    const {setPending, fetchBills, fetchAllBills, userInfo} = useIdeal();
-
+    const {setPending, fetchBills, fetchAllBills, userInfo, clients} = useIdeal();
+    const [clientId, setClientId] = useState("");
+    // console.log(clients);
     const GenerateBill = async () => {
+        console.log(clientId);
         if(order.status === "processing"){
             return toast.warn("Erreur ! Avant de generer la facture , soyez sur que votre commande n'est plus en attente");
         }
         if(!payementType){
             return toast.warn("Erreur ! Choisissez votre Methode de payement  ! ");
+        }
+        if(payementType === "CREDIT-HOTEL" && clientId === ""){
+            return toast.warn("Erreur ! Veuillez selectionner un client avant de continuer  ! ");
+
         }
 
         try{
@@ -38,6 +41,7 @@ function SingleOrder({order, users}) {
                     total: order.total,
                     items: order.items,
                     orderId: order._id,
+                    clientId: clientId
                 }
             );
             if(res?.success){
@@ -96,6 +100,14 @@ function SingleOrder({order, users}) {
                         payements.map(pay => <option key={pay} value={pay}>{pay}</option>)
                     }
                 </select>
+                {
+                    payementType === "CREDIT-HOTEL" && <select value={clientId} onChange={(e) => setClientId(e.target.value)} className='elegant-select m-1'>
+                    <option value={""}>~selectionner~</option>
+                    {
+                        clients.map(clt => <option key={clt?._id} value={clt?._id}>{clt?.fullname}</option>)
+                    }
+                </select>
+                }
             </div>
             <div className='center-x'>
                 <StyledButton onClick={GenerateBill} text="Generer Facture"/>

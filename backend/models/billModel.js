@@ -20,6 +20,9 @@ const billSchema = mongoose.Schema({
     total: {
         type: Number,
     },
+    clientId: {
+        type: mongoose.Schema.Types.ObjectId,
+    },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true

@@ -100,6 +100,8 @@ function RoomsPanel() {
                   <th>Check-in</th>
                   <th>Check-out</th>
                   <th></th>
+                  <th></th>
+
                 </tr>
               </thead>
               <tbody>
@@ -115,6 +117,13 @@ function RoomsPanel() {
                       <td>{clients?.filter( clt => clt._id === item?.occupiedBy)[0]?.fullname || "~"}</td>
                       <td>{`${item?.checkIn}`.substring(0, 10)}</td>
                       <td>{`${item?.checkOut}`.substring(0, 10)}</td>
+                      <td>
+                        <NormalButton
+                          onClick={() => openModal(3,item)}
+                          text="👁️"
+                          color="info"
+                        />
+                      </td>
                       <td>
                         <NormalButton
                           onClick={() => deleteRoomAsAdmin(item._id)}
@@ -146,7 +155,24 @@ function RoomsPanel() {
               </div>
             </form>
           </>
-        ) : (
+        ) : viewIndex === 3 ? <>
+          <div style={{maxHeight: "600px", overflow: "auto"}}>
+            <ul>
+              {current?.history?.map((single_itm, idx) => {
+                return <li style={{border: "1px solid black", padding: '8px', borderRadius: "12px", marginBlock: "6px"}} key={`${idx}-history-item`}>
+                  <p>
+                  checkIn: <strong>{single_itm?.checkIn}</strong> <br/>
+                  checkOut: <strong>{single_itm?.checkOut}</strong> <br/>
+                  client: <strong>{single_itm?.client}</strong> <br/>
+                  numero: <strong>{single_itm?.phoneNumber}</strong> <br/>
+                  date: <strong>{dateFormat(new Date(single_itm.date), "dd/mm/yyyy")}</strong>
+                  </p>
+                </li>
+              })
+              }
+            </ul>
+          </div>
+        </> : (
           <>
             <p className="text-center">Ajouter une Chambre</p>
             <form onSubmit={addNewRoom}>

@@ -146,9 +146,9 @@ function OrdersList() {
                         </select>
                       </td>
                       <td><FaEye style={{cursor: "pointer"}} onClick={()=>openModal(order, 0)}/></td>
-                      <td>
+                      {/* <td>
                         <button className='btn btn-secondary' onClick={()=>openModal(order, 1)}><FaPen/></button>
-                      </td>
+                      </td> */}
                       {
                         (userInfo?.role === "admin" || userInfo?.role === "dev") && <td>
                             <button onClick={() => HandleDeleteOrder(order._id)} className="btn btn-danger"><FaTrash /></button>

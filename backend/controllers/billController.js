@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import asyncHandler from "express-async-handler";
 import Order from '../models/orderModel.js';
 import Bill from '../models/billModel.js';
+import Client from '../models/clientModel.js';
 
 const createBill = asyncHandler(async (req, res, next) => {
     const {
@@ -12,7 +13,8 @@ const createBill = asyncHandler(async (req, res, next) => {
         total,
         orderId,
         items,
-        note
+        note,
+        clientId
     } = req.body;
     const user_id = req.user._id;
     // console.log(req.body)
@@ -20,6 +22,18 @@ const createBill = asyncHandler(async (req, res, next) => {
     if(!items || !total || !orderId || !waiter || !table ){
         res.status(400);
         throw new Error("Erreur ! formulaire incomplet");
+    }
+
+    const client = await Client.findById(clientId);
+    if (payement === "CREDIT-HOTEL"){
+        if(!client){
+            res.status(200);
+            throw new Error("Erreur ! c'est client n'existe pas(plus)");
+        }
+        client.history = [...client.history, 
+            {total: total, orderId: orderId, items: items, type: "restaurant", date: new Date()}
+        ];
+        await client.save();
     }
     
     const new_bill = await Bill.create({
@@ -29,6 +43,7 @@ const createBill = asyncHandler(async (req, res, next) => {
         waiter,
         total,
         orderId,
+        clientId,
         items,
         userId: user_id,
         updatedBy: user_id,
@@ -95,12 +110,12 @@ const getBill = asyncHandler(async (req, res, next) => {
 });
 
 const getAllBills = asyncHandler(async(req, res, next) => {
-    const bills = await Bill.find();
+    const bills = await Bill.find().sort({_id: -1});;
     res.status(200).json({success: true, bills: bills})
 })
 
 const getBills = asyncHandler(async (req, res, next) => {
-    const bills = await Bill.find({deleted: false});
+    const bills = await Bill.find({deleted: false}).sort({_id: -1});
     if(bills){
         res.status(200).json({success: true, bills: bills});
     }else{

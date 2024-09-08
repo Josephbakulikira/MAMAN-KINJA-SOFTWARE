@@ -10,14 +10,24 @@ import StyledButton from "../components/styledButton";
 import TablesGrid from "../components/TablesGrid";
 import SelectWaiter from "../components/selectWaiter";
 import FloatingButton from "../components/floatingButton";
-import { createOrder } from "../api/order";
+import { createOrder, updateOrder } from "../api/order";
 import OrdersList from "../components/commandList";
 import BillsList from "../components/billsList";
+import dateFormat from "dateformat";
 
 function HomePage() {
   const navigate = useNavigate();
   const [openPanel, setOpenPanel] = useState(false);
-  const { setPending, pending, fetchOrders, userInfo, items, cart, setCart } = useIdeal();
+  const {
+    setPending,
+    pending,
+    fetchOrders,
+    userInfo,
+    items,
+    cart,
+    setCart,
+    orders,
+  } = useIdeal();
   const [currentTab, setTab] = useState(0);
   const [waiter, setWaiter] = useState(userInfo?._id);
   const [searchKey, setSearchKey] = useState("");
@@ -90,73 +100,131 @@ function HomePage() {
     localStorage.setItem("idealCart", JSON.stringify(new_cart));
   }
 
-
   async function ConfirmOrder() {
-    if(table === ""){
+    if (table === "") {
       return toast.warn("Erreur, Selectionner une table");
     }
-    if(waiter === ""){
+    if (waiter === "") {
       return toast.warn("Erreur, Selectionner un serveur");
     }
-    if(cart.items.length === 0){
-      return toast.warn("Erreur, Ajouter un produit dans votre panier d'abord avant de passer une commande");
+    if (cart.items.length === 0) {
+      return toast.warn(
+        "Erreur, Ajouter un produit dans votre panier d'abord avant de passer une commande"
+      );
     }
 
-    console.log(waiter);
+    // console.log(waiter);
 
-    try{
+    try {
       setPending(true);
-      const res = await createOrder(
-        {
-          items: cart.items,
-          table: table,
-          waiter: waiter,
-          total: cart.total
-        }
-      );
-      if(res?.success){
-        toast.success("Votre commande a bien été reçue !")
+      const res = await createOrder({
+        items: cart.items,
+        table: table,
+        waiter: waiter,
+        total: cart.total,
+      });
+      if (res?.success) {
+        toast.success("Votre commande a bien été reçue !");
         setPending(false);
         setCart({
-            items: [],
-            total: 0,
-            payementType: "",
-            waiter: "",
-            table: "",
-            clientName: "",
-            clientNumber: "",
-        })
+          items: [],
+          total: 0,
+          payementType: "",
+          waiter: "",
+          table: "",
+          clientName: "",
+          clientNumber: "",
+        });
         setTable("");
         setTab(1);
         setOpenPanel(false);
         fetchOrders();
-      } else{
-        toast.error("Erreur! Verifier votre connexion ou bien reconnectez-vous!");
+      } else {
+        toast.error(
+          "Erreur! Verifier votre connexion ou bien reconnectez-vous!"
+        );
         setPending(false);
       }
-    }catch(err){
+    } catch (err) {
       toast.error("Erreur! Verifier votre connexion ou bien reconnectez-vous!");
       setPending(false);
     }
   }
 
+  async function UpdateOrder() {
+    if (table === "") {
+      return toast.warn("Erreur, Selectionner une table");
+    }
+    if (waiter === "") {
+      return toast.warn("Erreur, Selectionner un serveur");
+    }
+    if (cart.items.length === 0) {
+      return toast.warn(
+        "Erreur, Ajouter un produit dans votre panier d'abord avant de passer une commande"
+      );
+    }
+
+    // console.log(waiter);
+
+    try {
+      setPending(true);
+      const res = await updateOrder(cart);
+      if (res?.success) {
+        toast.success("Votre commande a bien modifié !");
+        setPending(false);
+        setCart({
+          items: [],
+          total: 0,
+          payementType: "",
+          waiter: "",
+          table: "",
+          clientName: "",
+          clientNumber: "",
+        });
+        setTable("");
+        setTab(1);
+        setOpenPanel(false);
+        fetchOrders();
+        localStorage.setItem("idealCart", JSON.stringify({}));
+      } else {
+        toast.error(
+          "Erreur! Verifier votre connexion ou bien reconnectez-vous!"
+        );
+        setPending(false);
+      }
+    } catch (err) {
+      toast.error("Erreur! Verifier votre connexion ou bien reconnectez-vous!");
+      setPending(false);
+    }
+  }
 
   useEffect(() => {
     setWaiter(userInfo?._id);
-  }, [userInfo])
+  }, [userInfo]);
+
+  // useEffect(() => {
+  //   console.log(cart);
+  //   console.log("-----");
+  //   console.log(JSON.parse(localStorage.getItem("idealCart")))
+  // }, [cart]);
 
   return (
     <section className="home-section">
-      <FloatingButton setOpenPanel={setOpenPanel}/>
+      <FloatingButton setOpenPanel={setOpenPanel} />
       <div
         id="mySidepanel"
         style={{ zIndex: "99", width: openPanel ? "400px" : "0px" }}
         className="sidepanel"
-    
       >
         <div className="p-2">
-          <div className="d-flex" style={{justifyContent: "flex-end"}}>
-            <button onClick={() => setOpenPanel(false)} className="btn btn-warning" style={{fontWeight: "bold", fontSize: "20px"}}>x</button>
+          <div className="d-flex" style={{ justifyContent: "flex-end" }}>
+            <button
+              onClick={() => setOpenPanel(false)}
+              className="btn btn-warning"
+              style={{ fontWeight: "bold", fontSize: "20px" }}
+            >
+              x
+            </button>
           </div>
           <h4 className="text-center" style={{ color: "white" }}>
             Panier
@@ -204,11 +272,25 @@ function HomePage() {
                 Total: <span style={{ fontSize: "30px" }}>{cart.total}</span> $
               </h4>
               <hr className="mt-2 mb-2" style={{ color: "white" }} />
-
             </li>
           </ul>
+
           <div className="center-x">
-            <StyledButton text="Confirmer" onClick={() => ConfirmOrder()}/>
+            <StyledButton
+              text={
+                cart._id ===
+                  (JSON.parse(localStorage.getItem("idealCart"))?._id &&
+                cart?._id !== undefined)
+                  ? "Modifier"
+                  : "Confirmer"
+              }
+              onClick={() => cart._id ===
+                JSON.parse(localStorage.getItem("idealCart"))?._id &&
+              cart?._id !== undefined
+                ? UpdateOrder()
+                : ConfirmOrder()
+            }
+            />
           </div>
         </div>
       </div>
@@ -261,38 +343,118 @@ function HomePage() {
             </li>
           </ul>
         </div>
-        {
-          currentTab === 0 && <>
-          <div className="search-input-container m-3 gap-2">
-                  <input className="search-input" placeholder="recherche" value={searchKey} onChange={(e) => setSearchKey(e.target.value)}/>
-                  <button onClick={() => setSearchKey("")} className="btn btn-warning">Annuler</button>
-          </div>
-          <div className="container">
-            <TablesGrid selectedTable={table} setSelectedTable={setTable}/>
-          </div>
-          <ItemsGrid
-            addToCart={addToCart}
-            items={
-              searchKey === ""
-                ? items
-                : items.filter((product) =>
-                    product.name.toLowerCase().includes(searchKey.toLowerCase())
-                  )
-            }
-          />
-          </>
-        }
-        {
-          currentTab === 1 && <div className="container">
-            <OrdersList/>
-          </div>
-        }
+        {currentTab === 0 && (
+          <>
+            <div className="search-input-container m-3 gap-2">
+              <input
+                className="search-input"
+                placeholder="recherche"
+                value={searchKey}
+                onChange={(e) => setSearchKey(e.target.value)}
+              />
+              <button
+                onClick={() => setSearchKey("")}
+                className="btn btn-warning"
+              >
+                Annuler
+              </button>
+            </div>
+            <div className="container">
+              <TablesGrid selectedTable={table} setSelectedTable={setTable} />
+            </div>
+            <div style={{ display: "flex", justifyContent: "around" }}>
+              <ItemsGrid
+                addToCart={addToCart}
+                items={
+                  searchKey === ""
+                    ? items
+                    : items.filter((product) =>
+                        product.name
+                          .toLowerCase()
+                          .includes(searchKey.toLowerCase())
+                      )
+                }
+              />
 
-      {
-          currentTab === 2 && <div className="container">
-            <BillsList/>        
+              <div
+                style={{
+                  maxWidth: "600px",
+                  border: "1px solid gray",
+                  borderRadius: "12px",
+                  padding: "10px",
+                  marginInline: "10px",
+                }}
+              >
+                <div>
+                  <div>
+                    <div>
+                      <SelectWaiter waiter={waiter} setWaiter={setWaiter} />
+                    </div>
+                  </div>
+                  <div style={{ display: "grid" }}>
+                    {orders
+                      .filter(
+                        (filt) => filt.table === table && filt.waiter === waiter
+                      )
+                      .map((ordr) => {
+                        return (
+                          <div
+                            onClick={() => {
+                              setOpenPanel(true);
+                              localStorage.setItem(
+                                "idealCart",
+                                JSON.stringify(ordr)
+                              );
+                              setCart(ordr);
+                            }}
+                            style={{
+                              margin: "2px",
+                              paddingInline: "8px",
+                              display: "grid",
+                              justifyContent: "center",
+                              border: "1px solid gray",
+                              borderRadius: "8px",
+                              paddingBlock: "6px",
+                              marginBlock: "5px",
+                              cursor: "pointer",
+                            }}
+                            key={ordr?._id}
+                          >
+                            {dateFormat(
+                              new Date(ordr?.createdAt),
+                              "dd/mm/yy  HH:MM"
+                            )}
+                            {/* <p>
+                            {JSON.stringify(ordr)}
+                          </p> */}
+                            <ul>
+                              {ordr.items.map((itm) => (
+                                <li key={itm.id}>
+                                  {itm.name} | {itm.price} | x{itm.quantity} |{" "}
+                                  {itm.total} $
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        );
+                      })}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+        {currentTab === 1 && (
+          <div className="container">
+            <OrdersList />
           </div>
-        }
+        )}
+
+        {currentTab === 2 && (
+          <div className="container">
+            <BillsList />
+          </div>
+        )}
       </div>
     </section>
   );
