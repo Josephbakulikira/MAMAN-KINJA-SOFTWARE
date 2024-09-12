@@ -14,17 +14,23 @@ function SelectWaiter({waiter, setWaiter}) {
 
     return (
         <div className='center-x'>
-            <select value={waiter} onChange={(e) => setWaiter(e.target.value)} className='elegant-select'>
-            <option value=""> ~ selectionner ~</option>
-
-                <option value={userInfo?._id} >{userInfo?.name}</option>
-                {
-                    getWaiters(users).map((user) => {
-                        return <option value={user._id} key={user._id}>{user.name}</option>
-                    })
-                }
-            </select>
-        </div>
+        {getWaiters(users).map((user) => (
+            <div
+                key={user._id}
+                className='card waiter-container m-2 p-2 d-flex'
+                style={{
+                    alignItems: "center",
+                    background: waiter === user._id ? "rgb(99, 255, 79)" : "",
+                    cursor: 'pointer',
+                    
+                }}
+                onClick={() => setWaiter(user._id)}
+            >
+                <i className="fa fa-user-waiter" style={{ fontSize: "25px" }}></i>
+                <span style={{ fontSize: "14px", fontWeight: "bold" }}>{findUserName(user._id)}</span>
+            </div>
+        ))}
+    </div>
     )
 }
 

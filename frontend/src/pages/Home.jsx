@@ -14,9 +14,13 @@ import { createOrder, updateOrder } from "../api/order";
 import OrdersList from "../components/commandList";
 import BillsList from "../components/billsList";
 import dateFormat from "dateformat";
+import { MdPrint } from "react-icons/md";
+import CustomModal from "../components/customModal";
+import Invoice from "../components/invoice";
 
 function HomePage() {
   const navigate = useNavigate();
+  const [invoiceOpen, setInvoiceOpen] = useState(false);
   const [openPanel, setOpenPanel] = useState(false);
   const {
     setPending,
@@ -33,6 +37,10 @@ function HomePage() {
   const [searchKey, setSearchKey] = useState("");
   const [table, setTable] = useState("");
   // console.log(userInfo)
+
+  const closeInvoiceModal = () => {
+    setInvoiceOpen(false);
+  }
 
   const handleLogout = async (e) => {
     e.preventDefault();
@@ -217,10 +225,17 @@ function HomePage() {
         className="sidepanel"
       >
         <div className="p-2">
-          <div className="d-flex" style={{ justifyContent: "flex-end" }}>
+          <div className="d-flex" style={{ justifyContent: "space-between" }}>
+            <button
+                onClick={() => setInvoiceOpen(true)}
+                className="btn btn-primary"
+                style={{ fontWeight: "bold", fontSize: "20px" }}
+              >
+              <MdPrint />
+            </button>
             <button
               onClick={() => setOpenPanel(false)}
-              className="btn btn-warning"
+              className="btn btn-danger"
               style={{ fontWeight: "bold", fontSize: "20px" }}
             >
               x
@@ -230,9 +245,9 @@ function HomePage() {
             Panier
           </h4>
           <hr style={{ color: "white" }} />
-          <div>
-            <SelectWaiter waiter={waiter} setWaiter={setWaiter} />
-          </div>
+          {/* <div>
+            Modifier Commande
+          </div> */}
           <ul className="tile-list">
             {cart.items.map((carting) => {
               return (
@@ -259,7 +274,7 @@ function HomePage() {
                   <span>{carting?.price} $</span>
                   <button
                     onClick={() => removeToCart(carting.id)}
-                    className="btn btn-danger"
+                    className="btn btn-secondary"
                   >
                     X
                   </button>
@@ -279,17 +294,18 @@ function HomePage() {
             <StyledButton
               text={
                 cart._id ===
-                  (JSON.parse(localStorage.getItem("idealCart"))?._id &&
-                cart?._id !== undefined)
+                  JSON.parse(localStorage.getItem("idealCart"))?._id &&
+                cart._id !== undefined
                   ? "Modifier"
                   : "Confirmer"
               }
-              onClick={() => cart._id ===
-                JSON.parse(localStorage.getItem("idealCart"))?._id &&
-              cart?._id !== undefined
-                ? UpdateOrder()
-                : ConfirmOrder()
-            }
+              onClick={() =>
+                cart._id ===
+                  JSON.parse(localStorage.getItem("idealCart"))?._id &&
+                cart._id !== undefined
+                  ? UpdateOrder()
+                  : ConfirmOrder()
+              }
             />
           </div>
         </div>
@@ -362,6 +378,9 @@ function HomePage() {
             <div className="container">
               <TablesGrid selectedTable={table} setSelectedTable={setTable} />
             </div>
+            <div>
+              <SelectWaiter waiter={waiter} setWaiter={setWaiter} />
+            </div>
             <div style={{ display: "flex", justifyContent: "around" }}>
               <ItemsGrid
                 addToCart={addToCart}
@@ -387,9 +406,8 @@ function HomePage() {
               >
                 <div>
                   <div>
-                    <div>
-                      <SelectWaiter waiter={waiter} setWaiter={setWaiter} />
-                    </div>
+                    <div style={{fontWeight:"900", textAlign:"center", fontSize:"20px"}}>Modifier la Commande</div>
+                    <hr />
                   </div>
                   <div style={{ display: "grid" }}>
                     {orders
@@ -456,6 +474,9 @@ function HomePage() {
           </div>
         )}
       </div>
+      <CustomModal isOpen={invoiceOpen} closeModal={closeInvoiceModal}>
+        <Invoice bill={cart}/>
+      </CustomModal>
     </section>
   );
 }

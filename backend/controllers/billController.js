@@ -23,10 +23,12 @@ const createBill = asyncHandler(async (req, res, next) => {
         res.status(400);
         throw new Error("Erreur ! formulaire incomplet");
     }
-
-    const client = await Client.findById(clientId);
-    if (payement === "CREDIT-HOTEL"){
+    // console.log(clientId)
+    // const client = await Client.findById(clientId);
+    if (payement === "CREDIT-HOTEL" && clientId !== ""){
+        const client = await Client.findById(clientId);
         if(!client){
+            // console.log("error here")
             res.status(200);
             throw new Error("Erreur ! c'est client n'existe pas(plus)");
         }

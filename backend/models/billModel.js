@@ -21,7 +21,7 @@ const billSchema = mongoose.Schema({
         type: Number,
     },
     clientId: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,

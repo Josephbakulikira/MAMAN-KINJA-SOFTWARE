@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import CustomModal from '../customModal';
 import { useIdeal } from '../../context';
 import dateFormat from 'dateformat';
@@ -7,8 +7,12 @@ import Invoice from '../invoice';
 
 function BillsList() {
     const [isOpen, setIsOpen] = useState(false);
-    const {userInfo, bills, allBills, users} = useIdeal();
+    const {userInfo, bills, allBills, users, items} = useIdeal();
     const [selected, setSelected] = useState({})
+    const [filteredBills, setFilteredBills] = useState([]);
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [totalRevenue, setTotalRevenue] = useState(0);
+    const [totalQuantity, setTotalQuantity] = useState(0);
 
     function closeModal(){
         setIsOpen(false);
@@ -22,6 +26,53 @@ function BillsList() {
         setIsOpen(true);
         setSelected(bill?.bill || bill);
     }
+
+
+
+  const formatBillItems = (bill) => {
+    const formattedItems = [];
+    bill.items.forEach((item) => {
+      formattedItems.push({
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price,
+        total: item.quantity * item.price,       });
+
+      console.log("Testing :", item)
+
+    });
+    return formattedItems;
+  };
+
+  useEffect(() =>{
+    filterBillsByDate(selectedDate)
+  }, [ selectedDate, bills ])
+
+  const filterBillsByDate = (date) => {
+    const filtered = bills.filter((bill) => {
+      const billDate = new Date(bill.updatedAt);
+      return billDate.toDateString() === date.toDateString();
+    });
+    setFilteredBills(filtered);
+    calculateTotals(filtered);
+  };
+
+
+  const calculateTotals = (filteredBills) => {
+    let totalRevenue = 0;
+    let totalQuantity = 0;
+    filteredBills.forEach((bill) => {
+      totalRevenue += bill.total;
+      totalQuantity += bill.items.reduce((acc, item) => acc + item.quantity, 0);
+    });
+    setTotalRevenue(totalRevenue);
+    setTotalQuantity(totalQuantity);
+  };
+
+  const handleDateChange = (date) =>{
+    setSelectedDate(date)
+  }
+
     return (
         <>
         <div>
@@ -67,6 +118,8 @@ function BillsList() {
           </div>
         </div>
         </div>
+
+
         
         <CustomModal isOpen={isOpen} closeModal={closeModal}>
             <Invoice bill={selected}/>

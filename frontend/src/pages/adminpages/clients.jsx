@@ -11,7 +11,7 @@ import HotelInvoice from "../../components/hotelInvoice";
 
 function ClientsPanel() {
   const { clients, setClients, setPending, rooms, setRooms, fetchClients} = useIdeal();
-  const [new_client, setNewClient] = useState(null);
+  const [new_client, setNewClient] = useState({email: "flatrestomamankinja@gmail.com"});
   const [current, setCurrent] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [viewIndex, setViewIndex] = useState(0);
@@ -29,7 +29,7 @@ function ClientsPanel() {
   function closeModal() {
     setIsOpen(false);
     setCurrent(null);
-    setNewClient(null);
+    // setNewClient(null);
   }
 
   function openModal(i, data) {
@@ -105,6 +105,7 @@ function ClientsPanel() {
         let filtered_rooms = rooms.filter(rmm => rmm.name !== response.room.name)
         setRooms([...filtered_rooms, response.room])
         closeModal();
+        setNewClient({email: "flatrestomamankinja@gmail.com"})
       } else {
         setPending(false);
         toast.error(response?.message || "Erreur!");

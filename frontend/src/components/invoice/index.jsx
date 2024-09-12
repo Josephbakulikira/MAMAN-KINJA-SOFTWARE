@@ -83,16 +83,16 @@ function Invoice({bill }) {
               </table>
             </div>
           </div>
-          <div className="invoice-total-amount">
+          {/* <div className="invoice-total-amount">
             <p>{bill.total}</p>
-          </div>
+          </div> */}
         </div>
         <div className="invoice-footer text-center">
           <p>Merci de nous avoir choisi</p>
         </div>
-        <div className="center-x">
+        {/* <div className="center-x">
             <QRCode value={`${bill._id} - maman kinja`} size={100}/>
-        </div>
+        </div> */}
         <div className='center-x'>
             <p>Serveur: {users.filter(sgl => sgl._id === bill?.waiter)[0]?.name}</p>
         </div>

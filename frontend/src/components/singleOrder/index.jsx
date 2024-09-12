@@ -11,14 +11,14 @@ const payements = [
     "CREDIT-HOTEL"
 ];
 
-function SingleOrder({order, users}) {
+function SingleOrder({order, users, closeModal}) {
     const [payementType, setPayement] = useState("CASH");
     const [note, setNote] = useState("");
     const {setPending, fetchBills, fetchAllBills, userInfo, clients} = useIdeal();
     const [clientId, setClientId] = useState("");
     // console.log(clients);
     const GenerateBill = async () => {
-        console.log(clientId);
+        // console.log(clientId);
         if(order.status === "processing"){
             return toast.warn("Erreur ! Avant de generer la facture , soyez sur que votre commande n'est plus en attente");
         }
@@ -52,6 +52,7 @@ function SingleOrder({order, users}) {
                 if(userInfo?.role === "admin" || userInfo?.role === "dev"){
                     fetchAllBills();
                 }
+                closeModal()
             }else{
                 setPending(false);
                 toast.error("Erreur! Verifier votre connexion")
@@ -70,20 +71,26 @@ function SingleOrder({order, users}) {
             <h6 className='text-secondary'>utilisateur: {users.filter(user => user._id === order.updatedBy)[0]?.name}</h6>
             <h6 className='text-primary'>{order.table}</h6>
             <h6>Produits</h6>
-            <ol style={{overflowY: "scroll"}}>
-                {
-                    order.items?.map((item) => {
-                        return <li key={item.id}>
-                            <ul>
-                                <li className='m-0 p-0'><b>Nom:</b> <span style={{fontSize: "16px", marginInline: "5px", fontWeight: "bold", color: "cornflowerblue"}}>{item.name}</span></li>
-                                <li className='m-0 p-0'><b>Prix Unitaire:</b> <span style={{fontSize: "16px", marginInline: "5px", fontWeight: "bold", color: "cornflowerblue"}}>{item.price}</span> $</li>
-                                <li className='m-0 p-0'><b>Quantité:</b> <span style={{fontSize: "16px", marginInline: "5px", fontWeight: "bold", color: "cornflowerblue"}}>{item.quantity}</span> Pcs</li>
-                                <li className='m-0 p-0'><b>sub-total:</b><span style={{fontSize: "16px", marginInline: "5px", fontWeight: "bold", color: "cornflowerblue"}}>{item.total}</span> $</li>
-                            </ul>
-                        </li>
-                    })
-                }
-            </ol>
+            <table className="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">Prix Unitaire</th>
+                            <th scope="col">Quantité</th>
+                            <th scope="col">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {order.items?.map((item) => (
+                            <tr key={item.id}>
+                                <td>{item.name}</td>
+                                <td>{item.price} $</td>
+                                <td>{item.quantity} Pcs</td>
+                                <td>{item.total} $</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             <hr/>
             <div className='center-x'>
                 <h4>
