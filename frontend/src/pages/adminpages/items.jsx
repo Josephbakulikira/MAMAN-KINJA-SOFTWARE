@@ -18,6 +18,8 @@ function ItemsAdmin({ items, setPending, setItems }) {
   const [desc, setDesc] = useState("");
   const [price, setPrice] = useState("");
   const [foodtype, setType] = useState("");
+  const [hasStock, setHasStock] = useState(false);
+  const [quantity, setQuantity] = useState(0);
 
   function closeModal() {
     setIsOpen(false);
@@ -26,6 +28,8 @@ function ItemsAdmin({ items, setPending, setItems }) {
     setType("");
     setPrice("");
     setDesc("");
+    setQuantity(0);
+    setHasStock(false);
   }
 
   function openModal(i, data) {
@@ -38,6 +42,8 @@ function ItemsAdmin({ items, setPending, setItems }) {
       setDesc(data?.description);
       setPrice(data?.price?.toString());
       setType(data?.type);
+      setHasStock(data?.hasStock);
+      setQuantity(data?.quantity)
     }
   }
 
@@ -73,6 +79,8 @@ function ItemsAdmin({ items, setPending, setItems }) {
         description: desc,
         price: Number(price),
         type: foodtype,
+        quantity: quantity,
+        hasStock: hasStock,
       });
       if (res.success) {
         toast.success("Produit modifié ! 😉");
@@ -109,6 +117,8 @@ function ItemsAdmin({ items, setPending, setItems }) {
         description: desc,
         price: Number(price),
         type: foodtype,
+        quantity: quantity,
+        hasStock: hasStock
       });
       if (res.success) {
         toast.success("Produit ajouté ! 😉");
@@ -183,6 +193,7 @@ function ItemsAdmin({ items, setPending, setItems }) {
                   <th>Image</th>
                   <th>Nom</th>
                   <th>Prix</th>
+                  <th>Quantité</th>
                   <th>Description</th>
                   <th> </th>
                   <th> </th>
@@ -210,6 +221,7 @@ function ItemsAdmin({ items, setPending, setItems }) {
                       </td>
                       <td>{food.name}</td>
                       <td>{food.price} $</td>
+                      <td>{food.quantity} {food.hasStock ? "pcs" : "🚫"}</td>
                       <td>
                         {" "}
                         {food.description.substr(0, 10)}{" "}
@@ -274,6 +286,39 @@ function ItemsAdmin({ items, setPending, setItems }) {
                 <option value="nourriture">NOURRITURE</option>
                 <option value="boisson">BOISSON</option>
               </select>
+              <div style={{display: "flex", justifyContent: "space-around", alignItems: 'center'}}>
+                <label htmlFor="checkbox">
+                  Gestion stock : 
+                </label>
+              <input
+                style={{width: "30px", height: "30px"}}
+                className=" m-2"
+                type="checkbox"
+                id="checkbox"
+                name="checkbox"
+                checked={hasStock}
+                onChange={(e) => setHasStock(!hasStock)}
+                placeholder="Gestion Stock"
+                required
+              />
+              </div>
+              {
+                hasStock && <div style={{display: "flex", justifyContent: "space-around", alignItems: 'center'}}>
+                <label htmlFor="quantity">
+                 Quantité: 
+                </label>
+              <input
+                className=" m-2"
+                type="number"
+                id="quantity"
+                name="quantity"
+                value={quantity}
+                onChange={(e) => setQuantity(e.target.value)}
+                placeholder="Quantité"
+                required
+              />
+              </div>
+              }
               <div className="center-x mt-4">
                 <StyledButton
                   type="submit"
@@ -321,6 +366,39 @@ function ItemsAdmin({ items, setPending, setItems }) {
                 <option value="nourriture">NOURRITURE</option>
                 <option value="boisson">BOISSON</option>
               </select>
+              <div style={{display: "flex", justifyContent: "space-around", alignItems: 'center'}}>
+                <label htmlFor="checkbox">
+                  Gestion stock : 
+                </label>
+              <input
+                style={{width: "30px", height: "30px"}}
+                className=" m-2"
+                type="checkbox"
+                id="checkbox"
+                name="checkbox"
+                checked={hasStock}
+                onChange={(e) => setHasStock(!hasStock)}
+                placeholder="Gestion Stock"
+                required
+              />
+              </div>
+              {
+                hasStock && <div style={{display: "flex", justifyContent: "space-around", alignItems: 'center'}}>
+                <label htmlFor="quantity">
+                 Quantité: 
+                </label>
+              <input
+                className=" m-2"
+                type="number"
+                id="quantity"
+                name="quantity"
+                value={quantity}
+                onChange={(e) => setQuantity(e.target.value)}
+                placeholder="Quantité"
+                required
+              />
+              </div>
+              }
               <div className="center-x mt-4">
                 <StyledButton
                   type="submit"

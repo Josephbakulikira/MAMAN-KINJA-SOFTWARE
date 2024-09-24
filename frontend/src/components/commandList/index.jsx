@@ -164,7 +164,7 @@ function OrdersList() {
         </div>
         
         <CustomModal isOpen={isOpen} closeModal={closeModal}>
-            {tabIndex === 0 && <SingleOrder order={selected} users={users}/>}
+            {tabIndex === 0 && <SingleOrder closeModal={closeModal} order={selected} users={users}/>}
             {tabIndex === 1 && <>
                 <h3>Modifier la commande</h3>
                 <hr/>

@@ -4,7 +4,7 @@ const api_suffix="/api/bills/";
 
 export const createBill = async (body) => {
     try{
-        const {data} = await client.post(`${api_suffix}create`,body, {withCredentials: true});
+        const {data} = await client.post(`${api_suffix}create`, body, {withCredentials: true});
         // console.log(data);
         return data;
     }catch(error) {

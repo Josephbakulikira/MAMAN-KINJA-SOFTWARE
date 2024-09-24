@@ -88,6 +88,7 @@ function Invoice({bill }) {
           </div> */}
         </div>
         <div className="invoice-footer text-center">
+          <p>{bill.note}</p>
           <p>Merci de nous avoir choisi</p>
         </div>
         {/* <div className="center-x">

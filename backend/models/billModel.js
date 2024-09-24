@@ -44,6 +44,10 @@ const billSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: true
     },
+    processed: {
+        type: Boolean,
+        default: false
+    }
 },
 {
     timestamps: true

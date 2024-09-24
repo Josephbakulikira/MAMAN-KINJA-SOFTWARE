@@ -90,6 +90,7 @@ function BillsList() {
                   <th>Total</th>
                   <th>payement</th>
                   <th>Voir</th>
+                  <th></th>
                     {(userInfo?.role === "admin" || userInfo?.role === "dev") && <th className='th-white'> </th>}
                   </tr>
               </thead>
@@ -105,6 +106,7 @@ function BillsList() {
                       <td>{bill.total}</td>
                       <td>{bill.payement}</td>
                       <td><FaEye style={{cursor: "pointer"}} onClick={()=>openModal(bill)}/></td>
+                      <td>{bill.processed === true ? "✔️" : "✖️"}</td>
                       {
                         (userInfo?.role === "admin" || userInfo?.role === "dev") && <td>
                             <button onClick={() => {}} className="btn btn-danger"><FaTrash /></button>

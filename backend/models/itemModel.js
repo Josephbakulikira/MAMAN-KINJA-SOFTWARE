@@ -9,6 +9,14 @@ const itemSchema = mongoose.Schema({
     image: {
         type: String
     },
+    quantity: {
+        type: Number,
+        required: false,
+    },
+    hasStock: {
+        type: Boolean,
+        default: false,
+    },
     stockRef: {
         type: mongoose.Schema.ObjectId,
     },

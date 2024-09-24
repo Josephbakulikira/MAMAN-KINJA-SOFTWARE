@@ -34,9 +34,12 @@ function ItemCard({item, addToCart}) {
             </div>
             <div className='quantity-container'>
                 <button className="btn btn-primary" onClick={Decrement}> - </button>
-                <span className="">{quantity}</span>
+                <div style={{display: "flex", justifyContent: 'center'}}>
+                <input value={quantity} style={{width: "60px", height: "40px", textAlign: "center"}} onChange={(e) => setQuantity(e.target.value)}/>
+            </div>
                 <button className="btn btn-primary" onClick={Increment}> + </button>
             </div>
+            
             <div className='center-x'>
                 <SimpleButton onClick={() => addToCart(item, quantity)} text={"Ajouter"} fontSize="20px" />
             </div>

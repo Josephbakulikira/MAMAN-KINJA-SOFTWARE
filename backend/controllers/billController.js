@@ -3,6 +3,7 @@ import asyncHandler from "express-async-handler";
 import Order from '../models/orderModel.js';
 import Bill from '../models/billModel.js';
 import Client from '../models/clientModel.js';
+import { buyItems, localUpdateStock } from './itemController.js';
 
 const createBill = asyncHandler(async (req, res, next) => {
     const {
@@ -52,9 +53,13 @@ const createBill = asyncHandler(async (req, res, next) => {
         note
     });
 
-    if(new_bill){
+    const updated = await localUpdateStock(items);
+
+    if(new_bill && updated){
+        // console.log("EVERYTHING WAS UPDATED")
         res.status(200).json({success: true, bill: new_bill});
     }else{
+        await Bill.findByIdAndDelete(new_bill._id);
         res.status(400)
         throw new Error("Erreur! Verifier votre connection");
     }
@@ -124,6 +129,7 @@ const getBills = asyncHandler(async (req, res, next) => {
         res.status(400)
         throw new Error("Erreur!")
     }
-})
+});
+
 
 export {createBill, updateBill, deleteBill, removeBill, getBill, getAllBills, getBills};

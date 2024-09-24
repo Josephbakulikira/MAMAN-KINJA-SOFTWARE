@@ -12,6 +12,7 @@ import orderRoutes from "./routes/orderRoutes.js";
 import billRoutes from "./routes/billRoutes.js";
 import clientRoutes from "./routes/clientRoutes.js";
 import roomRoutes from "./routes/roomRoutes.js";
+import inventoryRoutes from "./routes/inventoryRoutes.js";
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 import connectDB from "./config/db.js";
 import morgan from 'morgan';
@@ -53,6 +54,7 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/bills", billRoutes);
 app.use("/api/clients", clientRoutes);
 app.use("/api/rooms", roomRoutes);
+app.use("/api/inventories", inventoryRoutes);
 
 app.all("*", (req, res) => {
   res.status(404);

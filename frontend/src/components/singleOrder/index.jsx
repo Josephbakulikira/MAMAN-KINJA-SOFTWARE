@@ -41,9 +41,11 @@ function SingleOrder({order, users, closeModal}) {
                     total: order.total,
                     items: order.items,
                     orderId: order._id,
-                    clientId: clientId
+                    clientId: clientId,
+                    note: note
                 }
             );
+            
             if(res?.success){
                 setPending(false);
 

@@ -13,6 +13,7 @@ import AdminPage from './pages/Admin'
 import CustomModal from './components/customModal';
 import "react-confirm-alert/src/react-confirm-alert.css";
 import ReportPage from './pages/adminpages/report'
+import SingleInventory from './pages/singleInventory'
 
 function App() {
   const {toggled, setToggled} = useState(false);
@@ -27,6 +28,7 @@ function App() {
         <Route path="/home" element={<HomePage/>}/>
         <Route path="/admin" element={<AdminPage/>}/>
         <Route path="/admin/report" element={<ReportPage/>}/>
+        <Route path="/administrator/inventories/:id" element={<SingleInventory/>} />
       </Routes>
       <ToastContainer />
     </>

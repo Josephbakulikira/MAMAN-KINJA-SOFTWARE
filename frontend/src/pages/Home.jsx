@@ -77,6 +77,12 @@ function HomePage() {
   function addToCart(item, quantity) {
     setOpenPanel(true);
 
+    if(item?.hasStock === true){
+      if(Number(quantity) > item.quantity){
+        return toast.warn(`${item?.name} stock est de ${item.quantity}`);
+      }
+    }
+
     let new_cart = { ...cart };
     var found = false;
 

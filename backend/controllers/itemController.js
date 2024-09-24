@@ -8,6 +8,8 @@ const createItem = asyncHandler(async (req, res, next) => {
         price,
         type,
         description,
+        quantity,
+        hasStock
     } = req.body;
     const user_id = req.user._id;
 
@@ -22,7 +24,9 @@ const createItem = asyncHandler(async (req, res, next) => {
         type,
         description,
         userId: user_id,
-        updatedBy: user_id
+        updatedBy: user_id,
+        hasStock: hasStock,
+        quantity: Number(quantity) || 0
     });
 
     if(new_item){
@@ -34,7 +38,7 @@ const createItem = asyncHandler(async (req, res, next) => {
 });
 
 const updateItem = asyncHandler(async (req, res, next) => {
-    const {name, price, type, description, id} = req.body;
+    const {name, price, type, description, id, quantity, hasStock} = req.body;
     const user_id = req.user._id;
     const item = await Item.findById(id);
     if(item){
@@ -42,6 +46,8 @@ const updateItem = asyncHandler(async (req, res, next) => {
         item.price = price || item.price;
         item.type = type || item.type;
         item.description = description || item.description;
+        item.hasStock = hasStock || item.hasStock;
+        item.quantity = Number(quantity) || item.quantity;
 
         item.updatedBy = user_id;
 
@@ -82,6 +88,40 @@ const getItems = asyncHandler(async (req, res, next) => {
     }
 });
 
+const buyItems = asyncHandler(async (req, res, next) => {
+    const {items} = req.body;
+    for(let i = 0; i < items.length; i++){
+        let currentItem = await Item.findById(items[i].id);
+        if(currentItem){
+            if(currentItem.hasStock){
+                currentItem.quantity= Number(currentItem.quantity) - Number(items[i].quantity); 
+                await currentItem.save();
+            }
+        }
+    }
+    
+    res.status(200).json({success: true, message: "Items updated"});
+})
+
+const localUpdateStock = async (items) => {
+    try{
+        for(let i = 0; i < items.length; i++){
+            let currentItem = await Item.findById(items[i].id);
+            if(currentItem){
+                if(currentItem.hasStock){
+                    currentItem.quantity= Number(currentItem.quantity) - Number(items[i].quantity); 
+                    await currentItem.save();
+                }
+            }
+        }
+        
+        return true
+    }catch(err){
+        console.log(err)
+        return false;
+    }
+}
 
 
-export {createItem, updateItem, deleteItem, getItem, getItems};
+
+export {createItem, updateItem, deleteItem, getItem, getItems, buyItems, localUpdateStock};

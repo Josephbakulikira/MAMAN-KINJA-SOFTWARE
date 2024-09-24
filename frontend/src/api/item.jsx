@@ -24,6 +24,17 @@ export const createItem = async (new_item) => {
     }
 }
 
+export const UpdateStockItems = async (items) => {
+    try{
+        const {data} = await client.post(`${api_suffix}buy`, items, {withCredentials: true});
+        // console.log(data);
+        return data;
+    }catch(error) {
+        // console.log(error);
+        return error
+    }
+}
+
 export const updateItem = async (updated_item) => {
     try{
         const {data} = await client.put(`${api_suffix}update`, updated_item, {withCredentials: true});

@@ -38,7 +38,7 @@ function ReportPage() {
 
   const getTotal = (mylist) => {
     let mytotal = 0;
-    invoices.map((inv) => {
+    mylist.map((inv) => {
       mytotal += Number(inv.total);
     });
     return mytotal;
