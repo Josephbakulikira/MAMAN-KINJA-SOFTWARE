@@ -67,3 +67,14 @@ export const getItem = async (id) => {
         return error
     }
 }
+
+export const addItemUpdate = async (body) => {
+    try{
+        const {data} = await client.post(`${api_suffix}add-stock`, body, {withCredentials: true});
+        // console.log(data);
+        return data;
+    }catch(error) {
+        // console.log(error);
+        return error
+    }
+}

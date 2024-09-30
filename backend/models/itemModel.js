@@ -41,6 +41,9 @@ const itemSchema = mongoose.Schema({
     updatedBy: {
         type: mongoose.Schema.Types.ObjectId,
         required: [true, "Item UserId est obligatoire"]
+    },
+    history: {
+        type: [Object]
     }
 },
 {

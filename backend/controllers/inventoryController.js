@@ -44,6 +44,6 @@ async function processBills(bills) {
 const getAllInventories = asyncHandler(async(req, res, next) => {
     const invs = await Inventory.find().sort({_id: -1});;
     res.status(200).json({success: true, inventories: invs})
-})
+});
 
 export  {generateInventory, getAllInventories}

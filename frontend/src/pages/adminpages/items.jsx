@@ -5,7 +5,7 @@ import CustomModal from "../../components/customModal";
 import StyledButton from "../../components/styledButton";
 import SimpleButton from "../../components/simpleButton";
 import { toast } from "react-toastify";
-import { createItem, deleteItem, updateItem } from "../../api/item";
+import { addItemUpdate, createItem, deleteItem, updateItem } from "../../api/item";
 import { confirmAlert } from "react-confirm-alert";
 import NormalButton from "../../components/normalButton";
 
@@ -20,6 +20,8 @@ function ItemsAdmin({ items, setPending, setItems }) {
   const [foodtype, setType] = useState("");
   const [hasStock, setHasStock] = useState(false);
   const [quantity, setQuantity] = useState(0);
+
+  const [stockValue, setStockValue] = useState(0);
 
   function closeModal() {
     setIsOpen(false);
@@ -86,6 +88,39 @@ function ItemsAdmin({ items, setPending, setItems }) {
         toast.success("Produit modifié ! 😉");
         closeModal();
         updateItemsContext(res.item);
+        setPending(false);
+      } else {
+        toast.error(res.message || "Erreur ! Verifier votre connexion");
+        setPending(false);
+      }
+    } catch (err) {
+      toast.error(
+        err.message || "Erreur! Verifier votre connexion, Serveur Indisponible"
+      );
+      setPending(false);
+    }
+  }
+
+  async function itemUpdateStock(e) {
+    e.preventDefault()
+    if (!stockValue) {
+      return toast.warn("entrez la quantité a ajouter");
+    }
+
+    if (Number(stockValue) < 1) {
+      return toast.warn("la quantité ne peux pas etre inferieur a 1");
+    }
+
+    try {
+      setPending(true);
+      const res = await addItemUpdate({
+        id: current._id,
+        offset: Number(stockValue)
+      });
+      if (res.success) {
+        toast.success("stock modifié ! 😉");
+        closeModal();
+        setStockValue(0);
         setPending(false);
       } else {
         toast.error(res.message || "Erreur ! Verifier votre connexion");
@@ -302,23 +337,6 @@ function ItemsAdmin({ items, setPending, setItems }) {
                 required
               />
               </div>
-              {
-                hasStock && <div style={{display: "flex", justifyContent: "space-around", alignItems: 'center'}}>
-                <label htmlFor="quantity">
-                 Quantité: 
-                </label>
-              <input
-                className=" m-2"
-                type="number"
-                id="quantity"
-                name="quantity"
-                value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
-                placeholder="Quantité"
-                required
-              />
-              </div>
-              }
               <div className="center-x mt-4">
                 <StyledButton
                   type="submit"
@@ -327,6 +345,22 @@ function ItemsAdmin({ items, setPending, setItems }) {
                 />
               </div>
             </form>
+
+            {hasStock  && <form onSubmit={itemUpdateStock} className="">
+              <br/>
+
+              <h4 className="text-center">Ajouter Stock</h4>
+              <div className="center-x">
+              <input min="0" type="number" value={stockValue} onChange={(e)=>setStockValue(e.target.value)} placeholder="quantité" />
+              </div>            
+              <div className="center-x mt-4">
+                <StyledButton
+                  type="submit"
+                  onClick={() => {}}
+                  text="Ajouter Stock"
+                />
+              </div>
+            </form>}
           </>
         ) : (
           <>
