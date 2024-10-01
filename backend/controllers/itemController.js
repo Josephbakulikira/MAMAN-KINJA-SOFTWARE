@@ -138,7 +138,7 @@ const itemUpdateStock = asyncHandler(async (req, res, next) => {
     date: new Date()
   };
 
-  item.history = item?.history?.length > 0 ? [new_history] : [...item.history, new_history];
+  item.history = item.history ? (item?.history?.length === 0 ? [new_history] : [...item.history, new_history]) : [new_history];
   item.quantity = Number(temp_quant) +  Number(offset);
 
   await item.save();
