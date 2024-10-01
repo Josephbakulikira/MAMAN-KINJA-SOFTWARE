@@ -232,13 +232,17 @@ function HomePage() {
       >
         <div className="p-2">
           <div className="d-flex" style={{ justifyContent: "space-between" }}>
-            <button
-                onClick={() => setInvoiceOpen(true)}
-                className="btn btn-primary"
-                style={{ fontWeight: "bold", fontSize: "20px" }}
-              >
-              <MdPrint />
-            </button>
+            
+              {cart._id ===
+                  JSON.parse(localStorage.getItem("idealCart"))?._id &&
+                cart._id !== undefined
+                  ? <button
+                  onClick={() => setInvoiceOpen(true)}
+                  className="btn btn-primary"
+                  style={{ fontWeight: "bold", fontSize: "20px" }}
+                ><MdPrint /></button>
+                  : ""} 
+            
             <button
               onClick={() => setOpenPanel(false)}
               className="btn btn-danger"
@@ -418,7 +422,7 @@ function HomePage() {
                   <div style={{ display: "grid" }}>
                     {orders
                       .filter(
-                        (filt) => filt.table === table && filt.waiter === waiter
+                        (filt) => filt.table === table && filt.waiter === waiter && (filt.status !== "confirmer" && filt.status !== "ready")
                       )
                       .map((ordr) => {
                         return (

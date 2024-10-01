@@ -52,6 +52,15 @@ function SingleInventory() {
     return dateformat(new_date, "dd/mm/yyyy");
   }
 
+  function isRecent(date){
+    const now = Date.now();
+    const givenDate = new Date(date).getTime();
+    const diff = now - givenDate;
+    const hours48 = 48 * 60 * 60 * 1000 // 48 hours in milliseconds
+
+    return diff <= hours48;
+  }
+
   useEffect(() => {
     getUpdatedItemsData(bills);
   }, [inventories]);
@@ -133,6 +142,21 @@ function SingleInventory() {
             <h2>Pas disponible</h2>
           </div>
         )}
+        <div className="" style={{ display: "flex", justifyContent: "center" }}>
+        <h1
+          className="text-success text-center badge d-flex justify-center "
+          style={{
+            fontSize: "50px",
+            letterSpacing: "4px",
+            textAlign: "center",
+          }}
+        >
+          <span className="text-dark" style={{ fontSize: "50px" }}>
+            Total:
+          </span>
+          {getTotal(bills)} $
+        </h1>
+      </div>
       </>
       <div>
         {items?.length > 0 ? (
@@ -156,7 +180,7 @@ function SingleInventory() {
                       {items.map((itm, idx) => {
                         return (
                           <>
-                            <tr key={idx}>
+                            <tr key={`${idx}-produit`}>
                               <td>{idx + 1}</td>
                               <td>{itm?.name}</td>
                               <td>{itm?.quantity}</td>
@@ -170,16 +194,18 @@ function SingleInventory() {
                                       <th className="bg-dark text-white">date</th>
                                       {/* <th>Stock</th> */}
                                     </tr> : "🚫"}
-                                    {itm.history?.map((hstr, inx) => {
-                                      return (
-                                        <tr key={`${inx}-history`}>
-                                          <td>{inx + 1}</td>
-                                          <td>{hstr?.initialStock}</td>
-                                          <td>{hstr?.value}</td>
-                                          <td>{hstr?.stock}</td>
-                                          <td>{dateformat(new Date(hstr?.date), "dd/mm/yyyy (HH:MM)")}</td>
-                                        </tr>
-                                      );
+                                    {itm.history.reverse()?.map((hstr, inx) => {
+                                      if(isRecent(hstr.date)){
+                                        return (
+                                          <tr key={`${inx}-history`}>
+                                            <td>{inx + 1}</td>
+                                            <td>{hstr?.initialStock}</td>
+                                            <td>{hstr?.value}</td>
+                                            <td>{hstr?.stock}</td>
+                                            <td>{dateformat(new Date(hstr?.date), "dd/mm/yyyy (HH:MM)")}</td>
+                                          </tr>
+                                        );
+                                      }
                                     })}
                               </td>
                             </tr>
@@ -198,21 +224,7 @@ function SingleInventory() {
           </div>
         )}
       </div>
-      <div className="" style={{ display: "flex", justifyContent: "center" }}>
-        <h1
-          className="text-success text-center badge d-flex justify-center "
-          style={{
-            fontSize: "50px",
-            letterSpacing: "4px",
-            textAlign: "center",
-          }}
-        >
-          <span className="text-dark" style={{ fontSize: "50px" }}>
-            Total:
-          </span>
-          {getTotal(bills)} $
-        </h1>
-      </div>
+      
     </div>
   );
 }

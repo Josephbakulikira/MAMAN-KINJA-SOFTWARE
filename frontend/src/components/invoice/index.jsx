@@ -24,7 +24,7 @@ function Invoice({bill }) {
             
       <div  id="invoice_id" className="invoice">
       <div className="invoice-logo-brand">
-          <h3 style={{fontSize: "40px", whiteSpace: 'nowrap', textAlign: 'center'}}>MAMAN KINJA</h3>
+          <h3 style={{fontSize: "20px", whiteSpace: 'nowrap', textAlign: 'center'}}>MAMAN KINJA</h3>
         </div>
         <div className="invoice-information">
           <p><b>Facture #</b> : {allBills.length}</p>
@@ -60,7 +60,6 @@ function Invoice({bill }) {
                     <td>{itm.price} $</td>
                     <td>{itm.quantity}</td>
                     <td>{itm.total} $</td>
-
                   </tr>
                 })
               }
